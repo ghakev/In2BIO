@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="2018.01.23" orientation="orthogonal" renderorder="right-down" width="100" height="100" infinite="0" nextobjectid="1">
+ <tileset firstgid="1" name="grass" tilewidth="32" tileheight="32">
+  <image source="tuiles/grass.png" width="96" height="192"/>
+</tileset>
+ <layer name="Calque de Tile 1" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJzt0zEKwCAQBECrK+L//5s0ASNiESIeYQau8GzEZUsBAAAAAAAAAAAAAAAAAAAA4O9i9wMgub4jOrPecU1tztHs/H8esyzktMaoGyMxueM7fR7kcWdTyzOn6AYAAAAAAAAAAAAAAAAAAAAAAAAA3joBiv0A3g==
+  </data>
+ </layer>
+</map>
