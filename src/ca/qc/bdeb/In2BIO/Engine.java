@@ -24,13 +24,13 @@ public class Engine extends BasicGame {
 
     }
 
-    private float x = 0, y = 0;
+    private float x = 300, y = 300;
+    private float xCamera = x, yCamera = y;
     private int direction = 0;
     private boolean moving = false;
     private Animation[] animations = new Animation[8];
     private GameContainer container;
-    private TiledMap map1;
-    private Image map;
+    private TiledMap map;
     private ArrayList<Integer> listeKeyCodes = new ArrayList<>();
 
     public Engine() {
@@ -42,8 +42,7 @@ public class Engine extends BasicGame {
 
         this.container = container;
         container.setShowFPS(false);
-//        this.map = new Image("H:/In2BIO/src/ca/qc/bdeb/In2BIO/ressources/map/Desert.png");
-//        this.map1 = new TiledMap("map/exemple.tmx");
+        this.map = new TiledMap("ca/qc/bdeb/In2BIO/map.tmx");
         SpriteSheet spriteSheet = new SpriteSheet("char.png", 32, 32);
 
         this.animations[0] = loadAnimation(spriteSheet, 0, 1, 0);
@@ -106,35 +105,50 @@ public class Engine extends BasicGame {
     public void update(GameContainer gc, int i) throws SlickException {
 //        if (this.moving) {
 
-            if (listeKeyCodes.contains(Input.KEY_UP)) {
-                this.y -= .1f * i;
-                this.direction = 0;
-                this.moving = true;
-            }
-            if (listeKeyCodes.contains(Input.KEY_LEFT)) {
-                this.x -= .1f * i;
-                this.direction = 1;
-                this.moving = true;
-            }
-            if (listeKeyCodes.contains(Input.KEY_DOWN)) {
-                this.y += .1f * i;
-                this.direction = 2;
-                this.moving = true;
-            }
-            if (listeKeyCodes.contains(Input.KEY_RIGHT)) {
-                this.x += .1f * i;
-                this.direction = 3;
-                this.moving = true;
-            }
-//        }
+        if (listeKeyCodes.contains(Input.KEY_UP)) {
+            this.y -= .1f * i;
+            this.direction = 0;
+            this.moving = true;
+        }
+        if (listeKeyCodes.contains(Input.KEY_LEFT)) {
+            this.x -= .1f * i;
+            this.direction = 1;
+            this.moving = true;
+        }
+        if (listeKeyCodes.contains(Input.KEY_DOWN)) {
+            this.y += .1f * i;
+            this.direction = 2;
+            this.moving = true;
+        }
+        if (listeKeyCodes.contains(Input.KEY_RIGHT)) {
+            this.x += .1f * i;
+            this.direction = 3;
+            this.moving = true;
+        }
+
+        int w = container.getWidth() / 4;
+        if (this.x > this.xCamera + w) {
+            this.xCamera = this.x - w;
+        }
+        if (this.x < this.xCamera - w) {
+            this.xCamera = this.x + w;
+        }
+        int h = container.getHeight() / 4;
+        if (this.y > this.yCamera + h) {
+            this.yCamera = this.y - h;
+        }
+        if (this.y < this.yCamera - h) {
+            this.yCamera = this.y + h;
+        }
     }
 
     @Override
     public void render(GameContainer gc, Graphics grphcs) throws SlickException {
-//        grphcs.drawImage(map, 0, 0);
+        grphcs.translate(container.getWidth() / 2 - (int) this.x,
+                container.getHeight() / 2 - (int) this.y);
+        this.map.render(0, 0);
+        
         grphcs.drawAnimation(animations[direction + (moving ? 4 : 0)], x, y);
-//        this.map1.render(0, 0);
-
     }
 
 }
