@@ -5,6 +5,7 @@
  */
 package ca.qc.bdeb.In2BIO;
 
+import java.util.ArrayList;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
@@ -28,6 +29,9 @@ public class Engine extends BasicGame {
     private boolean moving = false;
     private Animation[] animations = new Animation[8];
     private GameContainer container;
+    private TiledMap map1;
+    private Image map;
+    private ArrayList<Integer> listeKeyCodes = new ArrayList<>();
 
     public Engine() {
         super("In2BIO");
@@ -35,9 +39,13 @@ public class Engine extends BasicGame {
 
     @Override
     public void init(GameContainer container) throws SlickException {
+
         this.container = container;
-        SpriteSheet spriteSheet = new SpriteSheet("char.png", 64, 64);
-//        Animation animation = new Animation();
+        container.setShowFPS(false);
+//        this.map = new Image("H:/In2BIO/src/ca/qc/bdeb/In2BIO/ressources/map/Desert.png");
+//        this.map1 = new TiledMap("map/exemple.tmx");
+        SpriteSheet spriteSheet = new SpriteSheet("char.png", 32, 32);
+
         this.animations[0] = loadAnimation(spriteSheet, 0, 1, 0);
         this.animations[1] = loadAnimation(spriteSheet, 0, 1, 1);
         this.animations[2] = loadAnimation(spriteSheet, 0, 1, 2);
@@ -47,14 +55,6 @@ public class Engine extends BasicGame {
         this.animations[6] = loadAnimation(spriteSheet, 1, 9, 2);
         this.animations[7] = loadAnimation(spriteSheet, 1, 9, 3);
 
-//        animations[0].addFrame(spriteSheet.getSprite(1, 1), 100);
-//        animations[1].addFrame(spriteSheet.getSprite(2, 1), 100);
-//        animations[2].addFrame(spriteSheet.getSprite(3, 1), 100);
-//        animations[3].addFrame(spriteSheet.getSprite(4, 1), 100);
-//        animations[4].addFrame(spriteSheet.getSprite(5, 1), 100);
-//        animations[5].addFrame(spriteSheet.getSprite(6, 1), 100);
-//        animations[6].addFrame(spriteSheet.getSprite(7, 1), 100);
-//        animations[7].addFrame(spriteSheet.getSprite(8, 1), 100);
     }
 
     Animation loadAnimation(SpriteSheet spriteSheet, int startX, int endX, int y) {
@@ -69,59 +69,71 @@ public class Engine extends BasicGame {
     @Override
     public void keyPressed(int key, char c) {
         super.keyPressed(key, c); //To change body of generated methods, choose Tools | Templates.
-        switch (key) {
-            case Input.KEY_UP:
-                this.direction = 0;
-                this.moving = true;
-                break;
-            case Input.KEY_LEFT:
-                this.direction = 1;
-                this.moving = true;
-                break;
-            case Input.KEY_DOWN:
-                this.direction = 2;
-                this.moving = true;
-                break;
-            case Input.KEY_RIGHT:
-                this.direction = 3;
-                this.moving = true;
-                break;
+        if (!listeKeyCodes.contains(key)) {
+            listeKeyCodes.add(key);
         }
+//        switch (key) {
+//            case Input.KEY_UP:
+//                this.direction = 0;
+//                this.moving = true;
+//                break;
+//            case Input.KEY_LEFT:
+//                this.direction = 1;
+//                this.moving = true;
+//                break;
+//            case Input.KEY_DOWN:
+//                this.direction = 2;
+//                this.moving = true;
+//                break;
+//            case Input.KEY_RIGHT:
+//                this.direction = 3;
+//                this.moving = true;
+//                break;
+//        }
     }
 
     @Override
     public void keyReleased(int key, char c) {
         super.keyReleased(key, c);
-        if (Input.KEY_ESCAPE == key) {
-            container.exit();
-        }
+//        if (Input.KEY_ESCAPE == key) {
+//            container.exit();
+//        }
+        listeKeyCodes.remove(new Integer(key));
         this.moving = false;
     }
 
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
-        if (this.moving) {
-            switch (this.direction) {
-                case 0:
-                    this.y -= .1f * i;
-                    break;
-                case 1:
-                    this.x -= .1f * i;
-                    break;
-                case 2:
-                    this.y += .1f * i;
-                    break;
-                case 3:
-                    this.x += .1f * i;
-                    break;
+//        if (this.moving) {
+
+            if (listeKeyCodes.contains(Input.KEY_UP)) {
+                this.y -= .1f * i;
+                this.direction = 0;
+                this.moving = true;
             }
-        }
+            if (listeKeyCodes.contains(Input.KEY_LEFT)) {
+                this.x -= .1f * i;
+                this.direction = 1;
+                this.moving = true;
+            }
+            if (listeKeyCodes.contains(Input.KEY_DOWN)) {
+                this.y += .1f * i;
+                this.direction = 2;
+                this.moving = true;
+            }
+            if (listeKeyCodes.contains(Input.KEY_RIGHT)) {
+                this.x += .1f * i;
+                this.direction = 3;
+                this.moving = true;
+            }
+//        }
     }
 
     @Override
     public void render(GameContainer gc, Graphics grphcs) throws SlickException {
-        
+//        grphcs.drawImage(map, 0, 0);
         grphcs.drawAnimation(animations[direction + (moving ? 4 : 0)], x, y);
+//        this.map1.render(0, 0);
 
     }
 
