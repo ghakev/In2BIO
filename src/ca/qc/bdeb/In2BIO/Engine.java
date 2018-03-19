@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -24,7 +25,7 @@ public class Engine extends BasicGame {
 
     }
 
-    private float x = 300, y = 300;
+    private float x = 150, y = 150;
     private float xCamera = x, yCamera = y;
     private int direction = 0;
     private boolean moving = false;
@@ -103,7 +104,56 @@ public class Engine extends BasicGame {
 
     @Override
     public void update(GameContainer gc, int i) throws SlickException {
-//        if (this.moving) {
+        if (this.moving) {
+            float futurX = getFuturX(i);
+            float futurY = getFuturY(i);
+            boolean collision = isCollision(futurX, futurY);
+            if (collision) {
+                this.moving = false;
+            } else {
+                this.x = futurX;
+                this.y = futurY;
+            }
+        }
+        float futurX = this.x;
+        float futurY = this.y;
+        if (this.moving) {
+
+            switch (this.direction) {
+                case 0:
+                    futurY = this.y - .1f * i;
+                    break;
+                case 1:
+                    futurX = this.x - .1f * i;
+                    break;
+                case 2:
+                    futurY = this.y + .1f * i;
+                    break;
+                case 3:
+                    futurX = this.x + .1f * i;
+                    break;
+            }
+            this.x = futurX;
+            this.y = futurY;
+        }
+        Image tile = this.map.getTileImage(
+                (int) futurX / this.map.getTileWidth(),
+                (int) futurY / this.map.getTileHeight(),
+                this.map.getLayerIndex("logic"));
+        boolean collision = tile != null;
+        if (collision) {
+            // il y a toujours collision si il y a un pixel non transparent dans la tuile 
+            Color color = tile.getColor(
+                    (int) futurX % this.map.getTileWidth(),
+                    (int) futurY % this.map.getTileHeight());
+            collision = color.getAlpha() > 0;
+        }
+        if (collision) {
+            this.moving = false;
+        } else {
+            this.x = futurX;
+            this.y = futurY;
+        }
 
         if (listeKeyCodes.contains(Input.KEY_UP)) {
             this.y -= .1f * i;
@@ -142,12 +192,51 @@ public class Engine extends BasicGame {
         }
     }
 
+    private boolean isCollision(float x, float y) {
+        int tileW = this.map.getTileWidth();
+        int tileH = this.map.getTileHeight();
+        int logicLayer = this.map.getLayerIndex("logic");
+        Image tile = this.map.getTileImage((int) x / tileW, (int) y / tileH, logicLayer);
+        boolean collision = tile != null;
+        if (collision) {
+            Color color = tile.getColor((int) x % tileW, (int) y % tileH);
+            collision = color.getAlpha() > 0;
+        }
+        return collision;
+    }
+
+    private float getFuturX(int delta) {
+        float futurX = this.x;
+        switch (this.direction) {
+            case 1:
+                futurX = this.x - .1f * delta;
+                break;
+            case 3:
+                futurX = this.x + .1f * delta;
+                break;
+        }
+        return futurX;
+    }
+
+    private float getFuturY(int delta) {
+        float futurY = this.y;
+        switch (this.direction) {
+            case 0:
+                futurY = this.y - .1f * delta;
+                break;
+            case 2:
+                futurY = this.y + .1f * delta;
+                break;
+        }
+        return futurY;
+    }
+
     @Override
     public void render(GameContainer gc, Graphics grphcs) throws SlickException {
         grphcs.translate(container.getWidth() / 2 - (int) this.x,
                 container.getHeight() / 2 - (int) this.y);
         this.map.render(0, 0);
-        
+
         grphcs.drawAnimation(animations[direction + (moving ? 4 : 0)], x, y);
     }
 
